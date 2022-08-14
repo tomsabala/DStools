@@ -16,6 +16,9 @@ public class dNode<T> extends Node<T>{
     public dNode<T> getPrev() {
         return prev;
     }
+    public dNode<T> getNext() {
+        return (dNode<T>) super.getNext();
+    }
 
     public void setPrev(dNode<T> prev) {
         this.prev = prev;

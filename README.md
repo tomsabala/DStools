@@ -1,2 +1,2 @@
 # DStools
-A data structures library, includes LinkedLists, Graphs, Trees and more.
+A data structures library, includes LinkedLists, DataStructures.Graphs, Trees and more.

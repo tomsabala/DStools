@@ -1,6 +1,6 @@
 package LLists;
 
-import javax.swing.*;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ public class llist<T> implements LinkedListADT<T>{
     //constructors
     public llist() { // empty constructor
         this.length = 0;
-        this.head = new Node<T>();
+        this.head = null;
         id = getIds();
         setIds();
     }
@@ -48,7 +48,6 @@ public class llist<T> implements LinkedListADT<T>{
 
     @Override
     public T prepend(T val) { // add new item at the start
-        this.length ++;
         Node<T> new_item = new Node<>(val);
         if (isEmpty()) // if list was empty
         {
@@ -56,9 +55,10 @@ public class llist<T> implements LinkedListADT<T>{
         }
         else
         { // list in not empty
-            new_item.setNext(this.getHead().getNext()); // push items forward
+            new_item.setNext(this.getHead()); // push items forward
             setHead(new_item);
         }
+        this.length ++;
         return val;
     }
 
@@ -66,7 +66,8 @@ public class llist<T> implements LinkedListADT<T>{
     public T append(T val) { // at item at the end
         if (isEmpty()) // if list is empty
         {
-            return prepend(val);
+            prepend(val);
+            return val;
         }
         else
         { //list in not empty
@@ -77,22 +78,31 @@ public class llist<T> implements LinkedListADT<T>{
             add_on(pivot, val); // add item function on pivot location
             return val;
         }
+
     }
 
     @Override
-    public Node<T> remove(Node<T> where) {
+    public Node<T> remove(int index) {
         // split cases for 0, other
         // list is not empty, search for item in it
-        if (isEmpty()) { // list is empty
+        if (isEmpty() || index>this.length || index<=0) { // list is empty
             return null;
         }
         Node<T> prev = null;
         Node<T> pivot = this.getHead();
-        while (pivot != null && pivot != where) {
+        int iter = 1;
+        while (pivot != null && iter < index) {
             prev = pivot;
             pivot = pivot.getNext();
+            iter ++;
         }
-        if (pivot != null && prev != null) {
+        if(prev == null){
+            Node<T> res = this.getHead();
+            this.setHead(res.getNext());
+            this.length--;
+            return res;
+        }
+        if (pivot != null) {
             prev.setNext(pivot.getNext());
             this.length--;
             return pivot;
@@ -162,6 +172,7 @@ public class llist<T> implements LinkedListADT<T>{
     }
 
     public void add_on(Node<T> on, T val){
+        /* insert a node with value val, after given node */
         if(on == null){return;}
         Node<T> new_item = new Node<>(val);
         Node<T> pivot = this.getHead();
@@ -176,6 +187,7 @@ public class llist<T> implements LinkedListADT<T>{
     }
 
     public boolean nodeWhich(Node<T> node){
+        /* check weather node is in the list */
         Node<T> pivot = this.getHead();
         while(pivot != null){
             if(pivot == node){
@@ -197,5 +209,37 @@ public class llist<T> implements LinkedListADT<T>{
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+
+    @Override
+    public Iterator<T> iterator() {
+        return new llistIterator<>(this);
+    }
+}
+
+class llistIterator<T> implements Iterator<T> {
+
+    private Node<T> current;
+    private llist<T> lst;
+    int index = 0;
+
+    // constructor
+    public llistIterator(llist<T> lst) {
+        current = lst.getHead();
+        this.lst = lst;
+    }
+
+    // Checks if the next element exists
+    public boolean hasNext() {
+        return index<lst.length();
+    }
+
+    // moves the cursor/iterator to next element
+    public T next() {
+        Node<T> ans = current;
+        index++;
+        current = current.getNext();
+        return ans.getVal();
     }
 }
