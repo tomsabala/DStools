@@ -1,18 +1,31 @@
 package Stacks_Queues;
 
+import LLists.Node;
+import LLists.llist;
+
 import java.lang.reflect.Array;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Stack;
 
 public class stack<T> implements stackADT<T>{
-    static protected int N = 32;
+    protected int N = 32;
     protected Class<T> c;
     protected int size=0;
     protected T[] elements;
+
+    private final int id;
+    static private int ids=1;
+
+
 
     @SuppressWarnings("unchecked")
     public stack(Class<T> clazz, int capacity) {
         N = capacity;
         c = clazz;
         elements = (T[]) Array.newInstance(c, N);
+        this.id = ids;
+        ids++;
     }
 
     @Override
@@ -56,7 +69,7 @@ public class stack<T> implements stackADT<T>{
 
     @SuppressWarnings("unchecked")
     private void extend() {
-        N *= 2;
+        N = Math.max(2, N * 2);
         T[] new_elements = (T[])Array.newInstance(c, N);
         int index = 0;
         for(T val : this.elements){
@@ -71,10 +84,65 @@ public class stack<T> implements stackADT<T>{
         N /= 2;
         T[] new_elements = (T[])Array.newInstance(c, N);
         int index = 0;
-        for(T val : this.elements){
+        while(index < N ){
             new_elements[index] = this.elements[index];
             index++;
         }
         this.elements = new_elements;
+    }
+    @SuppressWarnings("unchecked")
+    public T[] toArray() {
+        T[] ans = (T[])Array.newInstance(this.c, this.size);
+        int index = 0;
+        stack<T> cache = new stack<>(this.c, this.N);
+        while(!this.isEmpty()){
+            T val = this.pop();
+            ans[index++] = val;
+            cache.push(val);
+        }
+        while(!cache.isEmpty()){
+            this.push(cache.pop());
+        }
+        return ans;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        stack<?> stack = (stack<?>) o;
+        return id == stack.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+
+    @Override
+    public Iterator<T> iterator() {
+        return new stackIterator<>(this);
+    }
+}
+
+class stackIterator<T> implements Iterator<T> {
+
+    private int index;
+    private final T[] stack;
+
+    // constructor
+    public stackIterator(stack<T> stack) {
+        index = 0;
+        this.stack = stack.toArray();
+    }
+
+    // Checks if the next element exists
+    public boolean hasNext() {
+        return index<stack.length;
+    }
+
+    // moves the cursor/iterator to next element
+    public T next() {
+        return stack[index++];
     }
 }

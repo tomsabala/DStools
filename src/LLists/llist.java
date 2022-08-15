@@ -46,39 +46,40 @@ public class llist<T> implements LinkedListADT<T>{
         }
     }
 
-    @Override
-    public T prepend(T val) { // add new item at the start
-        Node<T> new_item = new Node<>(val);
-        if (isEmpty()) // if list was empty
-        {
-            setHead(new_item);
-        }
-        else
-        { // list in not empty
-            new_item.setNext(this.getHead()); // push items forward
-            setHead(new_item);
-        }
-        this.length ++;
-        return val;
-    }
-
-    @Override
-    public T append(T val) { // at item at the end
-        if (isEmpty()) // if list is empty
-        {
-            prepend(val);
-            return val;
-        }
-        else
-        { //list in not empty
+    public T append(Node<T> node){
+        if(isEmpty()) {
+            return prepend(node);
+        } else {
             Node<T> pivot = this.getHead();
             while(pivot.getNext() != null){
                 pivot = pivot.getNext();
             }
-            add_on(pivot, val); // add item function on pivot location
-            return val;
+            add_on(pivot, node); // add item function on pivot location
+            return node.getVal();
         }
+    }
 
+    public T prepend(Node<T> node){
+        if(isEmpty()){
+            setHead(node);
+        } else {
+            node.setNext(this.getHead());
+            setHead(node);
+        }
+        this.length++;
+        return node.getVal();
+    }
+
+    @Override
+    public T prepend(T val) { // add new item at the start
+        Node<T> new_item = new Node<>(val);
+        return this.prepend(new_item);
+    }
+
+    @Override
+    public T append(T val) { // at item at the end
+        Node<T> new_item = new Node<>(val);
+        return this.append(new_item);
     }
 
     @Override
@@ -173,15 +174,20 @@ public class llist<T> implements LinkedListADT<T>{
 
     public void add_on(Node<T> on, T val){
         /* insert a node with value val, after given node */
-        if(on == null){return;}
         Node<T> new_item = new Node<>(val);
+        add_on(on, new_item);
+    }
+
+    public void add_on(Node<T> on, Node<T> node){
+        /* insert a node with value val, after given node */
+        if(on == null){return;}
         Node<T> pivot = this.getHead();
         while(pivot != null && pivot != on){
             pivot = pivot.getNext();
         }
         if(pivot != null){
-            new_item.setNext(pivot.getNext());
-            pivot.setNext(new_item);
+            node.setNext(pivot.getNext());
+            pivot.setNext(node);
         }
         this.length ++;
     }

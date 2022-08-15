@@ -48,48 +48,55 @@ public class dllist<T> extends llist<T>{
         this.head = head;
     }
 
-    @Override
-    public T prepend(T val) {
-        dNode<T> new_item = new dNode<>(val);
+    public T prepend(dNode<T> node){
         if (isEmpty()) // if list was empty
         {
             this.length ++;
-            setHead(new_item);
+            setHead(node);
         }
         else
         { // list in not empty
             dNode<T> last = this.head.getPrev();
-            new_item.setNext(this.getHead()); // push items forward
-            this.getHead().setPrev(new_item);
-            new_item.setPrev((last));
-            last.setNext(new_item);
-            setHead(new_item);
+            node.setNext(this.getHead()); // push items forward
+            this.getHead().setPrev(node);
+            node.setPrev((last));
+            last.setNext(node);
+            setHead(node);
         }
-        return val;
+        return node.getVal();
+    }
+
+    public T append(dNode<T> node) {
+        if (isEmpty()) // if list is empty
+        {
+            prepend(node);
+            dNode<T> head = this.getHead();
+            head.setNext(head);
+            head.setPrev(head);
+            return node.getVal();
+        }
+        else
+        { //list in not empty
+            dNode<T> last = this.getHead().getPrev();
+            node.setNext(this.getHead());
+            node.setPrev(last);
+            this.getHead().setPrev(node);
+            last.setNext(node);
+
+        }
+        this.length++;
+        return node.getVal();
+    }
+    @Override
+    public T prepend(T val) {
+        dNode<T> new_item = new dNode<>(val);
+        return this.prepend(new_item);
     }
 
     @Override
     public T append(T val) { // at item at the end
-        if (isEmpty()) // if list is empty
-        {
-            prepend(val);
-            dNode<T> head = this.getHead();
-            head.setNext(head);
-            head.setPrev(head);
-            return val;
-        }
-        else
-        { //list in not empty
-            dNode<T> new_item = new dNode<>(val);
-            dNode<T> last = this.getHead().getPrev();
-            new_item.setNext(this.getHead());
-            new_item.setPrev(last);
-            this.getHead().setPrev(new_item);
-            last.setNext(new_item);
-
-        }
-        this.length++;
-        return val;
+        dNode<T> new_item = new dNode<>(val);
+        return this.append(new_item);
     }
 
     @Override
@@ -119,7 +126,6 @@ public class dllist<T> extends llist<T>{
         }
         return ans;
     }
-
 
     @Override
     public Iterator<T> iterator() {
